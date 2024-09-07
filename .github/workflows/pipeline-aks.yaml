@@ -80,8 +80,7 @@ jobs:
           pwd
           ls -ltr
           cd terraform/environments/${{ github.event.inputs.environment }}/${{ github.event.inputs.cluster }}
-            # // terraform init -backend-config=backend.conf
-          terraform init -reconfigure #-backend=false
+          terraform init -reconfigure
           terraform validate
 
           if [[ "${{ inputs.debug }}" == "true" ]]; then
