@@ -45,7 +45,7 @@ jobs:
         name: Set Runner Label
         shell: bash
         run: |
-          echo "runner_label=ubuntu-latest" >> $GITHUB_OUTPUT
+          echo "runner_label=self-hosted" >> $GITHUB_OUTPUT
           tree
 
           #TODO: when action runners active, use this and replace labels where necessary
