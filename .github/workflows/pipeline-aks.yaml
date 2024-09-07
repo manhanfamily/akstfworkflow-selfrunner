@@ -95,7 +95,7 @@ jobs:
             terraform show tfplan
           elif [[ "${{ inputs.action }}" == "Apply" ]]; then
             terraform show tfplan
-            terraform apply -auto-approve tfplan
+            terraform apply -auto-approve "tfplan"
           elif [[ "${{ inputs.action }}" == "Destroy" && "${{ github.ref }}" == "refs/heads/main" ]]; then
             terraform destroy -auto-approve -var-file '${{ github.event.inputs.cluster }}.tfvars'
           else
