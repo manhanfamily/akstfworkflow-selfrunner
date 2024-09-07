@@ -93,6 +93,7 @@ jobs:
           if [[ "${{ inputs.action }}" == "Plan" ]]; then
             terraform plan -var-file '${{ github.event.inputs.cluster }}.tfvars' -out=tfplan
             terraform show tfplan
+            ls -ltr
           elif [[ "${{ inputs.action }}" == "Apply" ]]; then
             terraform show tfplan
             terraform apply -auto-approve "tfplan"
