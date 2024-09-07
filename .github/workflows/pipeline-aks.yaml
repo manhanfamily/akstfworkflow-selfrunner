@@ -49,7 +49,7 @@ jobs:
           tree
 
   terraform-action:
-    needs: initialize_runner
+    needs: initialize_selfhosted_runner
     # runs-on: [self-hosted, linux, "${{ matrix.runner_label }}" ]
     runs-on: ${{ needs.initialize_runner.outputs.runner_label }}
     environment: ${{ github.event.inputs.environment }}
