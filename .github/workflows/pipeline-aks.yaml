@@ -51,7 +51,7 @@ jobs:
   terraform-action:
     needs: initialize_selfhosted_runner
     # runs-on: [self-hosted, linux, "${{ matrix.runner_label }}" ]
-    runs-on: ${{ needs.initialize_runner.outputs.runner_label }}
+    runs-on: ${{ needs.initialize_selfhosted_runner.outputs.runner_label }}
     environment: ${{ github.event.inputs.environment }}
     permissions:
       contents: write  # This gives write access to the repository contents
