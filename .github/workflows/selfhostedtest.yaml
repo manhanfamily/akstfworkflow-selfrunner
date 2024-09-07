@@ -1,0 +1,25 @@
+name: Self-Hosted Runner Test
+
+on:
+  push:
+    branches:
+      - main  # Trigger the workflow on push to the main branch
+
+jobs:
+  test-runner:
+    runs-on: self-hosted
+
+    steps:
+    - name: Check out the repository
+      uses: actions/checkout@v3  # Checkout the code from the repository
+
+    - name: Print runner info
+      run: |
+        echo "This job is running on a self-hosted runner."
+        uname -a  # Prints system information to verify the runner OS and architecture
+        whoami    # Prints the current user on the runner
+
+    - name: List files in repository
+      run: |
+        echo "Listing files in the repository:"
+        ls -la
