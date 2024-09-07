@@ -1,0 +1,112 @@
+
+name: pipeline-aks
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Select an Environment'
+        type: choice
+        required: true
+        options:
+        - staging
+        - certification
+        - production
+      cluster:
+        description: 'Select a cluster'
+        type: choice
+        required: true
+        options:
+        - control
+        - rmc
+        - csip
+        - edge
+      action: 
+        description: 'Terraform action'
+        type: choice
+        required: true
+        options:
+        - Plan
+        - Apply
+        - Destroy
+      debug:
+        description: 'Debug Mode'
+        default: false
+        type: boolean
+        required: false
+
+jobs:
+  initialize_runner:
+    environment: ${{ github.event.inputs.environment }}
+    runs-on: [self-hosted, nkrunner]
+    outputs:
+      runner_label: ${{ steps.set-runner.outputs.runner_label }}
+    steps:
+      - id: set-runner
+        name: Set Runner Label
+        shell: bash
+        run: |
+          echo "runner_label=ubuntu-latest" >> $GITHUB_OUTPUT
+          tree
+
+          #TODO: when action runners active, use this and replace labels where necessary
+          #   if [[ "${{ github.event.inputs.environment }}" == "production" ]]; then
+          #     echo "runner_label=production-ot-k8s" >> $GITHUB_OUTPUT
+          #   elif [[ "${{ github.event.inputs.environment }}" == "certification" ]]; then
+          #     echo "runner_label=certification-ot-k8s" >> $GITHUB_OUTPUT
+          #   else
+          #     echo "runner_label=staging-ot-k8s" >> $GITHUB_OUTPUT
+          #   fi
+
+  terraform-action:
+    needs: initialize_runner
+    # runs-on: [self-hosted, linux, "${{ matrix.runner_label }}" ]
+    runs-on: ${{ needs.initialize_runner.outputs.runner_label }}
+    environment: ${{ github.event.inputs.environment }}
+    permissions:
+      contents: write  # This gives write access to the repository contents
+      id-token: write  # This is for OIDC token generation
+    env:
+      ARM_USE_OIDC: true
+      ARM_CLIENT_ID: "${{ secrets.AZURE_CLIENT_ID }}"
+      ARM_SUBSCRIPTION_ID: "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+      ARM_TENANT_ID: "${{ secrets.AZURE_TENANT_ID }}"
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+  
+      - id: set-creds
+        name: Set Azure Credentials
+        shell: bash
+        run: |
+          CLUSTER=${{ github.event.inputs.cluster }}
+          CLUSTER_UPPER=$(echo "$CLUSTER" | tr '[:lower:]' '[:upper:]')
+
+      - name: Terraform Action
+        run: |
+          pwd
+          ls -ltr
+          cd terraform/environments/${{ github.event.inputs.environment }}/${{ github.event.inputs.cluster }}
+            # // terraform init -backend-config=backend.conf
+          terraform init -reconfigure #-backend=false
+          terraform validate
+
+          if [[ "${{ inputs.debug }}" == "true" ]]; then
+            echo "DEBUG: Enabling TF CORE TRACE LOGS"
+            export TF_LOG_CORE=TRACE
+            echo "DEBUG: ENABLING TF PROVIDER TRACE LOGS"
+            export TF_LOG_PROVIDER=TRACE
+          fi
+
+          if [[ "${{ inputs.action }}" == "Plan" ]]; then
+            terraform plan -var-file '${{ github.event.inputs.cluster }}.tfvars' -out=tfplan
+          elif [[ "${{ inputs.action }}" == "Apply" ]]; then
+            terraform apply -auto-approve tfplan
+          elif [[ "${{ inputs.action }}" == "Destroy" && "${{ github.ref }}" == "refs/heads/main" ]]; then
+            terraform destroy -auto-approve -var-file '${{ github.event.inputs.cluster }}.tfvars'
+          else
+            echo "Invalid action"
+          fi
