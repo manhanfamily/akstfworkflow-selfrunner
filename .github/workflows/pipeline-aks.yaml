@@ -92,14 +92,15 @@ jobs:
 
           if [[ "${{ inputs.action }}" == "Plan" ]]; then
             terraform plan -var-file '${{ github.event.inputs.cluster }}.tfvars' -out=tfplan
-            terraform show tfplan
+            #terraform show tfplan
             pwd
             ls -ltr
+            mv tfplan $GITHUB_WORKSPACE/tfplan
           elif [[ "${{ inputs.action }}" == "Apply" ]]; then
             pwd
             ls -ltr
-            terraform show ./terraform/environments/${{ github.event.inputs.environment }}/${{ github.event.inputs.cluster }}/tfplan
-            terraform apply -auto-approve "tfplan"
+            terraform show tfplan
+            terraform apply -auto-approve $GITHUB_WORKSPACE/tfplan
           elif [[ "${{ inputs.action }}" == "Destroy" && "${{ github.ref }}" == "refs/heads/main" ]]; then
             terraform destroy -auto-approve -var-file '${{ github.event.inputs.cluster }}.tfvars'
           else
