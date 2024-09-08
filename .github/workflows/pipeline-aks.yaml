@@ -82,6 +82,7 @@ jobs:
           name: tfplan
           
       - name: Terraform Action ${{ github.event.inputs.action }}
+        id: plan
         run: |
           pwd
           ls -ltr
@@ -97,10 +98,8 @@ jobs:
           fi
 
           if [[ "${{ inputs.action }}" == "Plan" ]]; then
-            terraform plan -var-file '${{ github.event.inputs.cluster }}.tfvars' -out=tfplan >> $GITHUB_OUTPUT
-            #terraform show tfplan
-            pwd
-            ls -ltr
+            echo 'plan<<EOF' >> $GITHUB_OUTPUT
+            terraform plan -no-color -out=tfplan >> $GITHUB_OUTPUT
             echo 'EOF' >> $GITHUB_OUTPUT
           elif [[ "${{ inputs.action }}" == "Apply" ]]; then
             pwd
@@ -113,13 +112,6 @@ jobs:
           else
             echo "Invalid action"
           fi
-      
-      - name: save tfplan Artifact (if Plan)
-        if: ${{ github.event.inputs.action == 'Plan' }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: tfplan
-          path: terraform/environments/${{ github.event.inputs.environment }}/${{ github.event.inputs.cluster }}
       
 
 
