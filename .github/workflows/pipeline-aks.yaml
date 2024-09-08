@@ -75,6 +75,12 @@ jobs:
           CLUSTER=${{ github.event.inputs.cluster }}
           CLUSTER_UPPER=$(echo "$CLUSTER" | tr '[:lower:]' '[:upper:]')
 
+      - name: Download tfplan Artifact (if Apply)
+        if: ${{ github.event.inputs.action == 'Apply' }}
+        uses: actions/download-artifact@v3
+        with:
+          name: tfplan
+          
       - name: Terraform Action ${{ github.event.inputs.action }}
         run: |
           pwd
@@ -108,4 +114,14 @@ jobs:
           else
             echo "Invalid action"
           fi
+      
+      - name: Upload tfplan Artifact (if Plan)
+        if: ${{ github.event.inputs.action == 'Plan' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: tfplan
+          path: $GITHUB_WORKSPACE/tfplan
+      
+
+
 
