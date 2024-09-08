@@ -9,5 +9,3 @@ data "azurerm_subnet" "subnet" {
   resource_group_name  = local.network_rg
 }
 
-data "azurerm_subscription" "current" {
-}
