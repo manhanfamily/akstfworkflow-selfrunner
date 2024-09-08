@@ -121,7 +121,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: tfplan
-          path: ${{ terraform/environments/${{ github.event.inputs.environment }}/${{ github.event.inputs.cluster }} }}
+          path: terraform/environments/${{ github.event.inputs.environment }}/${{ github.event.inputs.cluster }}
       
 
 
