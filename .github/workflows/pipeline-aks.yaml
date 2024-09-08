@@ -98,12 +98,11 @@ jobs:
           fi
 
           if [[ "${{ inputs.action }}" == "Plan" ]]; then
-            echo 'plan<<EOF' >> $GITHUB_OUTPUT
-            terraform plan -no-color -out=tfplan >> $GITHUB_OUTPUT
-            echo 'EOF' >> $GITHUB_OUTPUT
+            terraform plan -no-color -out=tfplan
+            ls -ltra
           elif [[ "${{ inputs.action }}" == "Apply" ]]; then
             pwd
-            ls -ltr
+            ls -ltra
             ls -ltr $GITHUB_WORKSPACE
             terraform show $GITHUB_WORKSPACE/tfplan
             terraform apply -auto-approve $GITHUB_WORKSPACE/tfplan
