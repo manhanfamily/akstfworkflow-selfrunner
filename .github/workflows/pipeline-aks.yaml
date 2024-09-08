@@ -75,7 +75,7 @@ jobs:
           CLUSTER=${{ github.event.inputs.cluster }}
           CLUSTER_UPPER=$(echo "$CLUSTER" | tr '[:lower:]' '[:upper:]')
 
-      - name: Terraform Action
+      - name: Terraform Action - ${{ github.event.inputs.action }}
         run: |
           pwd
           ls -ltr
