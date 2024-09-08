@@ -101,7 +101,7 @@ jobs:
             #terraform show tfplan
             pwd
             ls -ltr
-            cat $GITHUB_OUTPUT
+            echo $GITHUB_OUTPUT
             echo 'EOF' >> $GITHUB_OUTPUT
             pwd
           elif [[ "${{ inputs.action }}" == "Apply" ]]; then
