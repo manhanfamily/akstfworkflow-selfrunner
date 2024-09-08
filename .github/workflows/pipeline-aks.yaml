@@ -103,6 +103,7 @@ jobs:
             ls -ltr
             mv tfplan $GITHUB_WORKSPACE/tfplan
             ls -ltr $GITHUB_WORKSPACE
+            pwd
           elif [[ "${{ inputs.action }}" == "Apply" ]]; then
             pwd
             ls -ltr
@@ -120,7 +121,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: tfplan
-          path: $GITHUB_WORKSPACE/tfplan
+          path: $GITHUB_WORKSPACE/
       
 
 
