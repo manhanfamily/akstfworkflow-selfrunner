@@ -24,3 +24,5 @@ jobs:
       run: |
         echo "Listing files in the repository:"
         ls -la
+        pwd
+        echo $GITHUB_WORKSPACE
