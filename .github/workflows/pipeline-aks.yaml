@@ -96,10 +96,12 @@ jobs:
             pwd
             ls -ltr
             mv tfplan $GITHUB_WORKSPACE/tfplan
+            ls -ltr $GITHUB_WORKSPACE
           elif [[ "${{ inputs.action }}" == "Apply" ]]; then
             pwd
             ls -ltr
-            terraform show tfplan
+            ls -ltr $GITHUB_WORKSPACE
+            terraform show $GITHUB_WORKSPACE/tfplan
             terraform apply -auto-approve $GITHUB_WORKSPACE/tfplan
           elif [[ "${{ inputs.action }}" == "Destroy" && "${{ github.ref }}" == "refs/heads/main" ]]; then
             terraform destroy -auto-approve -var-file '${{ github.event.inputs.cluster }}.tfvars'
